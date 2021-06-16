@@ -32,9 +32,9 @@ pub struct Error<R> {
     pub location: InputLocation,
     /// Line/column within the input string
     pub line_col: LineColLocation,
-    path: Option<String>,
-    line: String,
-    continued_line: Option<String>,
+    pub path: Option<String>,
+    pub line: String,
+    pub continued_line: Option<String>,
 }
 
 /// Different kinds of parsing errors.

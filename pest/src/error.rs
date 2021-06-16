@@ -105,7 +105,7 @@ impl<R: RuleType> Error<R> {
             variant,
             location: InputLocation::Pos(pos.pos()),
             path: None,
-            line: visualize_whitespace(pos.line_of()),
+            line: pos.line_of().trim().to_owned(),
             continued_line: None,
             line_col: LineColLocation::Pos(pos.line_col()),
         }
@@ -153,8 +153,8 @@ impl<R: RuleType> Error<R> {
         };
 
         let mut line_iter = span.lines();
-        let start_line = visualize_whitespace(line_iter.next().unwrap_or(""));
-        let continued_line = line_iter.last().map(visualize_whitespace);
+        let start_line = line_iter.next().unwrap_or("").trim().to_owned();
+        let continued_line = line_iter.last().map(str::trim).map(ToOwned::to_owned);
 
         Error {
             variant,
@@ -511,10 +511,6 @@ impl<'i, R: RuleType> std::error::Error for Error<R> {
     }
 }
 
-fn visualize_whitespace(input: &str) -> String {
-    input.to_owned().replace('\r', "␍").replace('\n', "␊")
-}
-
 #[cfg(test)]
 mod tests {
     use super::super::position;
@@ -538,7 +534,7 @@ mod tests {
             vec![
                 " --> 2:2",
                 "  |",
-                "2 | cd␊",
+                "2 | cd",
                 "  |  ^---",
                 "  |",
                 "  = unexpected 4, 5, or 6; expected 1, 2, or 3",
@@ -564,7 +560,7 @@ mod tests {
             vec![
                 " --> 2:2",
                 "  |",
-                "2 | cd␊",
+                "2 | cd",
                 "  |  ^---",
                 "  |",
                 "  = expected 1 or 2",
@@ -590,7 +586,7 @@ mod tests {
             vec![
                 " --> 2:2",
                 "  |",
-                "2 | cd␊",
+                "2 | cd",
                 "  |  ^---",
                 "  |",
                 "  = unexpected 4, 5, or 6",
@@ -616,7 +612,7 @@ mod tests {
             vec![
                 " --> 2:2",
                 "  |",
-                "2 | cd␊",
+                "2 | cd",
                 "  |  ^---",
                 "  |",
                 "  = unknown parsing error",
@@ -641,7 +637,7 @@ mod tests {
             vec![
                 " --> 2:2",
                 "  |",
-                "2 | cd␊",
+                "2 | cd",
                 "  |  ^---",
                 "  |",
                 "  = error: big one",
@@ -667,7 +663,7 @@ mod tests {
             vec![
                 " --> 2:2",
                 "  |",
-                "2 | cd␊",
+                "2 | cd",
                 "3 | efgh",
                 "  |  ^^",
                 "  |",
@@ -694,7 +690,7 @@ mod tests {
             vec![
                 " --> 1:2",
                 "  |",
-                "1 | ab␊",
+                "1 | ab",
                 "  | ...",
                 "3 | efgh",
                 "  |  ^^",
@@ -722,7 +718,7 @@ mod tests {
             vec![
                 " --> 1:6",
                 "  |",
-                "1 | abcdef␊",
+                "1 | abcdef",
                 "2 | gh",
                 "  | ^----^",
                 "  |",
@@ -752,7 +748,7 @@ mod tests {
             vec![
                 " --> 1:1",
                 "  |",
-                "1 | abcdef␊",
+                "1 | abcdef",
                 "  | ^-----^",
                 "  |",
                 "  = error: big one",
@@ -808,7 +804,7 @@ mod tests {
             vec![
                 " --> 2:2",
                 "  |",
-                "2 | cd␊",
+                "2 | cd",
                 "  |  ^---",
                 "  |",
                 "  = unexpected 5, 6, or 7; expected 2, 3, or 4",
@@ -835,7 +831,7 @@ mod tests {
             vec![
                 " --> file.rs:2:2",
                 "  |",
-                "2 | cd␊",
+                "2 | cd",
                 "  |  ^---",
                 "  |",
                 "  = unexpected 4, 5, or 6; expected 1, 2, or 3",
